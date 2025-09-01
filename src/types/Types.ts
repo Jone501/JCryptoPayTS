@@ -136,3 +136,10 @@ export interface AppStats {
   start_at: Date;
   end_at: Date;
 }
+
+export interface Webhook {
+  update_id: number;
+  update_type: "invoice_paid";
+  request_date: Date;
+  payload: Invoice;
+}

@@ -1,6 +1,6 @@
 import assert from "assert";
-import { CryptoApp } from "../CryptoApp";
-import { Invoice, Error, Check } from "../types/Types";
+import { CryptoApp } from "./CryptoApp";
+import { Invoice, Error, Check } from "./types/Types";
 
 export interface PollingConfiguration {
   period?: number;

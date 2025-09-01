@@ -1,5 +1,5 @@
 import axios, { AxiosInstance } from "axios";
-import { PollingConfiguration, PollingManager } from "./polling/Polling";
+import { PollingConfiguration, PollingManager } from "./Polling";
 import { ApiResponse, AppInfo, AppStats, CryptoAsset, Balance, Check, Currency, ExchangeRate, Invoice, ResponseList, Transfer } from "./types/Types";
 import { CreateCheckBuilder, CreateInvoiceBuilder, GetChecksBuilder, GetInvoicesBuilder, GetStatsBuilder, GetTransfersBuilder, TransferBuilder } from "./types/Params";
 
