@@ -63,6 +63,9 @@ interface GetStatsParams {
   end_at?: Date;
 }
 
+/**
+ * Билдер параметров для метода createInvoice
+ */
 export class CreateInvoiceBuilder {
   private readonly params: CreateInvoiceParams;
 
@@ -125,6 +128,9 @@ export class CreateInvoiceBuilder {
   }
 }
 
+/**
+ * Билдер параметров для метода createCheck
+ */
 export class CreateCheckBuilder {
   private readonly params: CreateCheckParams;
 
@@ -149,6 +155,9 @@ export class CreateCheckBuilder {
   }
 }
 
+/**
+ * Билдер параметров для метода transfer
+ */
 export class TransferBuilder {
   private readonly params: TransferParams;
 
@@ -175,6 +184,9 @@ export class TransferBuilder {
   }
 }
 
+/**
+ * Билдер параметров для метода getInvoices
+ */
 export class GetInvoicesBuilder {
   private readonly params: GetInvoicesParams = {};
 
@@ -208,6 +220,9 @@ export class GetInvoicesBuilder {
   }
 }
 
+/**
+ * Билдер параметров для метода getTransfers
+ */
 export class GetTransfersBuilder {
   private readonly params: GetTransfersParams = {};
 
@@ -237,6 +252,9 @@ export class GetTransfersBuilder {
   }
 }
 
+/**
+ * Билдер параметров для метода getChecks
+ */
 export class GetChecksBuilder {
   private readonly params: GetChecksParams = {};
 
@@ -266,6 +284,9 @@ export class GetChecksBuilder {
   }
 }
 
+/**
+ * Билдер параметров для метода getStats
+ */
 export class GetStatsBuilder {
   private readonly params: GetStatsParams = {};
 

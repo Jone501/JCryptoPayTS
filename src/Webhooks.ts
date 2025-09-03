@@ -1,16 +1,28 @@
 import { createHash, createHmac } from "crypto";
 import { IncomingHttpHeaders } from "http";
-import fastify from "fastify";
-import express from "express";
+import fastify, { FastifyInstance } from "fastify";
 import { Invoice, Webhook } from "./types/Types";
 
+/**
+ * Абстрактная основа обработчика вебхуков
+ */
 export abstract class WebhookHandler {
   private webhookHandler: (webhook: Webhook) => boolean | void = () => {};
   private invoicePaidHandler: (invoice: Invoice) => void = () => {};
 
+  /**
+   * @param token Токен приложения
+   */
   constructor(private readonly token: string) {}
 
-  protected handleWebhook({ body, headers }: { body: any; headers: IncomingHttpHeaders }): boolean {
+  /**
+   * Обрабатывает запрос, содержащий вебхук
+   *
+   * @param body Тело запроса
+   * @param headers Заголовки запроса
+   * @returns `true`, если вебхук был полностью обработан
+   */
+  protected handleWebhook(body: any, headers: IncomingHttpHeaders): boolean {
     if (!this.checkSignature({ body: body, headers: headers })) return false;
     if (!this.isWebhook(body)) return false;
     if (!this.processWebhook(body)) return false;
@@ -28,11 +40,27 @@ export abstract class WebhookHandler {
     return typeof obj == "object" && obj != null && "update_id" in obj && "update_type" in obj && "request_date" in obj && "payload" in obj;
   }
 
+  /**
+   * Задаёт предварительный обработчик всех поступающих вебхуков
+   *
+   * Обработчик может возвращать `boolean` или `void`.
+   * Если возвращает `false`, дальнейшая обработка вебхуков отменяется.
+   * В противном случае вебхук обрабатывается дальше
+   *
+   * @param handler Обработчик вебхуков
+   */
   onWebhook(handler: (webhook: Webhook) => boolean | void): this {
     this.webhookHandler = handler;
     return this;
   }
 
+  /**
+   * Задаёт обработчик счетов из вебхуков
+   *
+   * Обрабатываются только вебхуки, прошедшие фильтрацию обработчиком {@link onWebhook}
+   *
+   * @param handler Обработчик счетов
+   */
   onInvoicePaid(handler: (invoice: Invoice) => void): this {
     this.invoicePaidHandler = handler;
     return this;
@@ -46,33 +74,33 @@ export abstract class WebhookHandler {
   }
 }
 
-export class FastifyWebhookServer extends WebhookHandler {
+/**
+ * Сервер для получения и обработки вебхуков
+ */
+export class WebhookServer extends WebhookHandler {
+  private readonly app: FastifyInstance;
+
+  /**
+   * Создаёт и запускает сервер для обработки вебхуков
+   *
+   * @param token Токен приложения
+   * @param port Порт сервера
+   * @param path Путь для принятия вебхуков
+   */
   constructor(token: string, port: number = 3000, path: string = "/") {
     super(token);
 
-    const app = fastify();
-    app.post(path, async (req) => {
-      return this.handleWebhook({
-        body: req.body,
-        headers: req.headers,
-      });
+    this.app = fastify();
+    this.app.post(path, async (req) => {
+      return this.handleWebhook(req.body, req.headers);
     });
-    app.listen({ port: port });
+    this.app.listen({ port: port });
   }
-}
 
-export class ExpressWebhookServer extends WebhookHandler {
-  constructor(token: string, port: number = 3000, path: string = "/") {
-    super(token);
-
-    const app = express();
-    app.use(express.json());
-    app.post(path, async (req) => {
-      return this.handleWebhook({
-        body: req.body,
-        headers: req.headers,
-      });
-    });
-    app.listen({ port: port });
+  /**
+   * Отключает сервер
+   */
+  close() {
+    this.app.close();
   }
 }

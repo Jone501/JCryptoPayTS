@@ -1,4 +1,3 @@
-import assert from "assert";
 import { CryptoApp } from "./CryptoApp";
 import { Invoice, Error, Check } from "./types/Types";
 
@@ -20,33 +19,37 @@ export class PollingManager {
 }
 
 export abstract class PollingTracker<T> {
-  protected handleTrackEnds: () => void = () => {};
+  protected handleTrackerDies: () => void = () => {};
   protected handleError: (error: Error) => boolean | void = () => {};
+  private readonly task: NodeJS.Timeout;
 
   constructor(protected readonly client: CryptoApp, private readonly config: PollingConfiguration, obj: T, lifetime?: number) {
     const period: number = this.config.period ? this.config.period : 5000;
     const maxTrackerLifetime: number | undefined = this.config.maxTrackerLifetime;
     var time: number = 0;
-    var task = setInterval(async () => {
+    this.task = setInterval(async () => {
       time += period;
       if ((lifetime && time >= lifetime) || (maxTrackerLifetime && time >= maxTrackerLifetime)) {
-        this.handleTrackEnds();
-        clearInterval(task);
+        this.kill();
       } else if (await this.test(obj)) {
-        clearInterval(task);
+        clearInterval(this.task);
       }
     }, period);
   }
 
   protected abstract test(obj: T): Promise<boolean>;
 
-  onTrackEnds(handler: () => void): this {
-    this.handleTrackEnds = handler;
+  onTrackerDies(handler: () => void): this {
+    this.handleTrackerDies = handler;
     return this;
   }
   onError(handler: (error: Error) => boolean | void): this {
     this.handleError = handler;
     return this;
+  }
+  kill() {
+    this.handleTrackerDies();
+    clearInterval(this.task);
   }
 
   protected error(error: Error): boolean {

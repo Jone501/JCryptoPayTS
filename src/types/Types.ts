@@ -15,20 +15,79 @@ export interface ResponseList<T> {
   items: T[];
 }
 
-const CryptoCurrencies = ["DOGS", "HMSTR", "USDT", "ETH", "WIF", "MY", "BNB", "TRUMP", "SOL", "TRX", "DOGE", "PEPE", "BTC", "CATI", "LTC", "MELANIA", "GRAM", "NOT", "MEMHASH", "MAJOR", "BONK", "USDC", "TON"] as const;
+const CryptoCurrencies = [
+  "DOGS",
+  "HMSTR",
+  "USDT",
+  "ETH",
+  "WIF",
+  "MY",
+  "BNB",
+  "TRUMP",
+  "SOL",
+  "TRX",
+  "DOGE",
+  "PEPE",
+  "BTC",
+  "CATI",
+  "LTC",
+  "MELANIA",
+  "GRAM",
+  "NOT",
+  "MEMHASH",
+  "MAJOR",
+  "BONK",
+  "USDC",
+  "TON",
+] as const;
 export type CryptoCurrency = (typeof CryptoCurrencies)[number];
 
 export type CryptoAsset = CryptoCurrency & ("USDT" | "TON" | "BTC" | "DOGE" | "LTC" | "ETH" | "BNB" | "TRX" | "USDC" | "JET" | "SEND");
 
 export type SwappableAsset = CryptoCurrency & ("USDT" | "TON" | "TRX" | "ETH" | "SOL" | "BTC" | "LTC");
 
-const FiatCurrencies = ["GBP", "IDR", "UAH", "ILS", "TJS", "PLN", "RUB", "AED", "KGS", "AMD", "BRL", "CNY", "BYN", "INR", "TRY", "UZS", "USD", "AZN", "EUR", "THB", "KZT", "GEL"] as const;
+const FiatCurrencies = [
+  "GBP",
+  "IDR",
+  "UAH",
+  "ILS",
+  "TJS",
+  "PLN",
+  "RUB",
+  "AED",
+  "KGS",
+  "AMD",
+  "BRL",
+  "CNY",
+  "BYN",
+  "INR",
+  "TRY",
+  "UZS",
+  "USD",
+  "AZN",
+  "EUR",
+  "THB",
+  "KZT",
+  "GEL",
+] as const;
 export type FiatCurrency = (typeof FiatCurrencies)[number];
 
+/**
+ * Проверяет, является ли валюта криптой
+ *
+ * @param code Буквенный код валюты
+ * @returns `true`, если это криптовалюта
+ */
 export function isCrypto(code: string): code is CryptoCurrency {
   return CryptoCurrencies.includes(code as CryptoCurrency);
 }
 
+/**
+ * Проверяет, является ли валюта фиатной
+ *
+ * @param code Буквенный код валюты
+ * @returns `true`, если валюта фиатная
+ */
 export function isFiat(code: string): code is FiatCurrency {
   return FiatCurrencies.includes(code as FiatCurrency);
 }
