@@ -11,7 +11,7 @@ import {
   TransferBuilder,
 } from "./types/Params";
 
-abstract class CryptoAppBase {
+export abstract class CryptoAppBase {
   private readonly axiosClient: AxiosInstance = axios.create({
     baseURL: `https://${this.url}`,
     headers: {
